@@ -1,5 +1,6 @@
 package org.example.ensetdemospringangular.services;
 
+import org.example.ensetdemospringangular.dtos.NewPaymentDTO;
 import org.example.ensetdemospringangular.entities.Payment;
 import org.example.ensetdemospringangular.entities.PaymentStatus;
 import org.example.ensetdemospringangular.entities.PaymentType;
@@ -32,7 +33,7 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public Payment savePayment(MultipartFile file, LocalDate date, double amount, PaymentType type, String studentCode) throws IOException {
+    public Payment savePayment(MultipartFile file, NewPaymentDTO newPaymentDTO) throws IOException {
 
         // creer un path ou on peut sauvegarder le chemin de notre fichier (lendroit=>"user.home") (le nom de repertoire =>"enset-data/payments")
         Path folderPath= Paths.get(System.getProperty("user.home"),"enset-data","payments");
@@ -45,12 +46,12 @@ public class PaymentService {
         Path filePath= Paths.get(System.getProperty("user.home"),"enset-data","payments",filaName+".pdf");
         Files.copy(file.getInputStream(),filePath);
 
-        Student student=studentRepository.findByCode(studentCode);
+        Student student=studentRepository.findByCode(newPaymentDTO.getStudentCode());
         Payment payment=Payment.builder()
-                .date(date)
-                .type(type)
+                .type(newPaymentDTO.getType())
+                .date(newPaymentDTO.getDate())
                 .student(student)
-                .amount(amount)
+                .amount(newPaymentDTO.getAmount())
                 // pour trouver le sous forme de url
                 .file(filePath.toUri().toString())
                 .build();

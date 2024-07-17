@@ -53,7 +53,7 @@ public class EnsetDemoSpringAngularApplication {
                         // generer un int entre 0 et paymentTypes.length
                         int index=random.nextInt(paymentTypes.length);
                         Payment payment=Payment.builder()
-                                .amount(1000+(int)(Math.random()+20000))
+                                .amount(1000+(int)(Math.random()*20000))
                                 .type(paymentTypes[index])
                                 .date(LocalDate.now())
                                 .student(st)

@@ -1,5 +1,6 @@
 package org.example.ensetdemospringangular.web.controller;
 
+import org.example.ensetdemospringangular.dtos.NewPaymentDTO;
 import org.example.ensetdemospringangular.entities.Payment;
 import org.example.ensetdemospringangular.entities.PaymentStatus;
 import org.example.ensetdemospringangular.entities.PaymentType;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin("*")
+//@CrossOrigin(origins = "http://localhost:4200")
 
 public class PaymentRestConstroller {
     private StudentRepository studentRepository;
@@ -40,17 +42,24 @@ public class PaymentRestConstroller {
         return paymentRepository.findAll();
     }
 
+    @PutMapping("payments/{id}")
+    public Payment updatePaymentStatus(@RequestParam PaymentStatus status,@PathVariable Long id){
+
+        return paymentService.updatePaymentStatus(status,id);
+    }
+
+    @GetMapping("students/{code}/payments")
+    public List<Payment> paymentsByStudentCode(@PathVariable String code ){
+
+        return paymentRepository.findByStudentCode(code);
+    }
+
     @GetMapping("/paymentsByStatus")
     public List<Payment> paymentByStatus(@RequestParam PaymentStatus status){
         return paymentRepository.findByStatus(status);
     }
 
-    @PutMapping("payments/{id}")
-    public Payment updatePaymentStatus(@RequestParam PaymentStatus status,@PathVariable Long id){
 
-        return paymentService.updatePaymentStatus(status,id);
-
-    }
 
     @GetMapping("/paymentsByType")
     public List<Payment> PaymentsByType(@RequestParam PaymentType type){
@@ -92,10 +101,18 @@ public class PaymentRestConstroller {
             on met path = "/payments",consumes = MediaType.MULTIPART_FORM_DATA_VALUE
             pour dire a spring que les donnees contient fichier
          */
+
+    @PostMapping(path = "/payments",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Payment savePayment(@RequestParam("file") MultipartFile file, NewPaymentDTO newPaymentDTO) throws IOException {
+        return paymentService.savePayment(file,newPaymentDTO);
+    }
+
+    /*
     @PostMapping(path = "/payments",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Payment savePayment(@RequestParam MultipartFile file, LocalDate date, double amount, PaymentType type, String studentCode) throws IOException {
         return this.paymentService.savePayment(file,date,amount,type,studentCode);
     }
+    */
 
     // indiquer que c'est un fichier pdf
 @GetMapping(path = "paymentFile/{paymentId}",produces = MediaType.APPLICATION_PDF_VALUE)
